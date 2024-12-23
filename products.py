@@ -89,7 +89,7 @@ class Product:
         if quantity <= 0:
             raise ValueError("Quantity must be greater than 0.")
         if quantity > self.quantity:
-            raise Exception("Insufficient quantity available.")
+            raise ValueError("Insufficient quantity available.")
 
         self.quantity -= quantity
 
