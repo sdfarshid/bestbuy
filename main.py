@@ -1,4 +1,4 @@
-from product import Product
+from products import Product
 from store import Store
 
 
