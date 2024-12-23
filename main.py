@@ -83,7 +83,7 @@ def set_order(store_obj) -> None:
         print(f"\nOrder successful! Total price: ${total_price:.2f}")
     except ValueError as error:
         print("Invalid input:", error)
-    except Exception as error:
+    except RuntimeError as error:
         print(f"Error: {error}")
 
 
@@ -104,7 +104,7 @@ def main():
         start(init())
     except ValueError as error:
         print("Invalid input:", error)
-    except Exception as error:
+    except RuntimeError as error:
         print(f"An unexpected error : {error}")
 
 

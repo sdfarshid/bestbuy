@@ -6,6 +6,7 @@ class Store:
     """
     Represents a store that contains products.
     """
+
     def __init__(self, products: List[Product]) -> None:
         """
         Constructor for the Store.
@@ -20,7 +21,7 @@ class Store:
         """
         self.products.append(product)
 
-    def remove_product(self, product: Product):
+    def remove_product(self, product: Product) -> None:
         """
         Removes a product from the store.
         :param product: Product instance to be removed.
@@ -54,4 +55,3 @@ class Store:
                 raise Exception(f"Product '{product.name}' not found in the store.")
             total_price += product.buy(quantity)
         return total_price
-

@@ -96,4 +96,3 @@ class Product:
         self.check_balance()
 
         return self.price * quantity
-
