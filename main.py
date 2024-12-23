@@ -1,20 +1,27 @@
-from Products import Products
-from Store import Store
+from product import Product
+from store import Store
 
 
 def init() -> Store:
     try:
-        product_list = [Products("MacBook Air M2", price=1450, quantity=100),
-                        Products("Bose QuietComfort Earbuds", price=250, quantity=500),
-                        Products("Google Pixel 7", price=400, quantity=250)
+        product_list = [Product("MacBook Air M2", price=1450, quantity=100),
+                        Product("Bose QuietComfort Earbuds", price=250, quantity=500),
+                        Product("Google Pixel 7", price=400, quantity=250)
                         ]
         return Store(product_list)
-    except (Exception, ValueError) as e:
+    except ValueError as error:
+        print("Invalid input:", error)
+    except Exception as error:
         print("\nAn unexpected error occurred:")
-        print(f"Error: {e}")
+        print(f"Error: {error}")
 
 
-def start(store_obj: Store):
+def start(store_obj: Store) -> None:
+    """
+    Starts the user interface for interacting with the store.
+    :param store_obj: An instance of the Store class.
+    """
+
     while True:
         display_menu()
         choice = input("Please choose a number (1-4): ")
@@ -37,7 +44,22 @@ def start(store_obj: Store):
         input("Press Enter to continue ")
 
 
-def set_order(store_obj):
+def set_order(store_obj) -> None:
+    """
+    Prompts the user to select products and quantities to create an order.
+    Valid products are added to the shopping list, and the total price is displayed.
+
+    Args:
+        store_obj (Store): An instance of the Store class to retrieve products and process the order.
+
+    Raises:
+        ValueError: For invalid input or missing products.
+        Exception: For other errors during the order process.
+
+    Returns:
+        None
+    """
+
     shopping_list = []
     print("\nEnter your order (leave product name empty to finish):")
     while True:
@@ -55,11 +77,13 @@ def set_order(store_obj):
     try:
         total_price = store_obj.order(shopping_list)
         print(f"\nOrder successful! Total price: ${total_price:.2f}")
-    except Exception as e:
-        print(f"Error: {e}")
+    except ValueError as error:
+        print("Invalid input:", error)
+    except Exception as error:
+        print(f"Error: {error}")
 
 
-def display_menu():
+def display_menu() -> None:
     """Displays the menu options for the user."""
     print("\nWelcome to the Best Buy Store! 🎉")
     print("1. List all products in store")
@@ -73,9 +97,11 @@ def main():
 
     try:
         start(best_buy)
-    except Exception as e:
+    except ValueError as error:
+        print("Invalid input:", error)
+    except Exception as error:
         print("\nAn unexpected error occurred:")
-        print(f"Error: {e}")
+        print(f"Error: {error}")
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-class Products:
+class Product:
     def __init__(self, name: str, price: float, quantity: int):
         if not name.strip():
             raise ValueError("Name cannot be empty.")
@@ -15,22 +15,24 @@ class Products:
     def get_quantity(self) -> float:
         return self.quantity
 
-    def set_quantity(self, quantity: int):
-
+    def set_quantity(self, quantity: int) -> None:
         if quantity < 0:
             raise ValueError("Quantity cannot be negative.")
 
         self.quantity = quantity
         self.check_balance()
+        return None
 
     def is_active(self) -> bool:
-        return self.active
+            return self.active
 
-    def activate(self):
+    def activate(self) -> None:
         self.active = True
+        return None
 
-    def deactivate(self):
+    def deactivate(self) -> None:
         self.active = False
+        return None
 
     def check_balance(self) -> None:
         if self.quantity == 0:
@@ -57,8 +59,8 @@ class Products:
 
 
 def main():
-    bose = Products("Bose QuietComfort Earbuds", price=250, quantity=500)
-    mac = Products("MacBook Air M2", price=1450, quantity=100)
+    bose = Product("Bose QuietComfort Earbuds", price=250, quantity=500)
+    mac = Product("MacBook Air M2", price=1450, quantity=100)
 
     print("--------")
     print(bose.buy(50))
