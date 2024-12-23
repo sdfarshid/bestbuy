@@ -1,4 +1,4 @@
-class Product:
+class Products:
     def __init__(self, name: str, price: float, quantity: int):
         if not name.strip():
             raise ValueError("Name cannot be empty.")
@@ -57,8 +57,8 @@ class Product:
 
 
 def main():
-    bose = Product("Bose QuietComfort Earbuds", price=250, quantity=500)
-    mac = Product("MacBook Air M2", price=1450, quantity=100)
+    bose = Products("Bose QuietComfort Earbuds", price=250, quantity=500)
+    mac = Products("MacBook Air M2", price=1450, quantity=100)
 
     print("--------")
     print(bose.buy(50))
