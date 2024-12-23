@@ -3,6 +3,10 @@ from store import Store
 
 
 def init() -> Store:
+    """
+    Initializes the store with default products.
+    :return: An instance of Store.
+    """
     try:
         product_list = [Product("MacBook Air M2", price=1450, quantity=100),
                         Product("Bose QuietComfort Earbuds", price=250, quantity=500),
@@ -93,6 +97,9 @@ def display_menu() -> None:
 
 
 def main():
+    """
+    Main function to run the store application.
+    """
     best_buy = init()
 
     try:
