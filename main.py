@@ -100,15 +100,12 @@ def main():
     """
     Main function to run the store application.
     """
-    best_buy = init()
-
     try:
-        start(best_buy)
+        start(init())
     except ValueError as error:
         print("Invalid input:", error)
     except Exception as error:
-        print("\nAn unexpected error occurred:")
-        print(f"Error: {error}")
+        print(f"An unexpected error : {error}")
 
 
 if __name__ == "__main__":
