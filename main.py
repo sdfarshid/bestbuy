@@ -1,4 +1,5 @@
-from products import Product
+import products
+import promotions
 from store import Store
 
 
@@ -6,18 +7,39 @@ def init() -> Store:
     """
     Initializes the store with default products.
     :return: An instance of Store.
-    """
-    try:
-        product_list = [Product("MacBook Air M2", price=1450, quantity=100),
+      product_list = [Product("MacBook Air M2", price=1450, quantity=100),
                         Product("Bose QuietComfort Earbuds", price=250, quantity=500),
                         Product("Google Pixel 7", price=400, quantity=250)
                         ]
+    """
+    try:
+        product_list = [ products.Product("MacBook Air M2", price=1450, quantity=100),
+                         products.Product("Bose QuietComfort Earbuds", price=250, quantity=500),
+                         products.Product("Google Pixel 7", price=500, quantity=250),
+                         products.NonStockedProduct("Windows License", price=125),
+                         products.LimitedProduct("Shipping", price=10, quantity=250, maximum=1)
+                         ]
+
+        # Create promotion catalog
+        second_half_price = promotions.SecondHalfPrice("Second Half price!")
+        third_one_free = promotions.ThirdOneFree("Third One Free!")
+        thirty_percent = promotions.PercentDiscount("30% off!", percent=30)
+
+        # Add promotions to products
+        product_list[0].set_promotion(second_half_price)
+        product_list[0].set_promotion(thirty_percent)
+        product_list[2].set_promotion(thirty_percent)
+        product_list[1].set_promotion(third_one_free)
+        product_list[3].set_promotion(thirty_percent)
+
         return Store(product_list)
     except ValueError as error:
         print("Invalid input:", error)
     except Exception as error:
         print("\nAn unexpected error occurred:")
         print(f"Error: {error}")
+
+
 
 
 def start(store_obj: Store) -> None:
@@ -31,14 +53,12 @@ def start(store_obj: Store) -> None:
         choice = input("Please choose a number (1-4): ")
 
         if choice == "1":
-            print("\nProducts in Store:")
-            print("\n--------------")
-            for index, product in enumerate(store_obj.get_all_products(), start=1):
-                print(f"{index}. {product.show()}")
+            show_products(store_obj)
         elif choice == "2":
             total_quantity = store_obj.get_total_quantity()
             print(f"\nTotal of {total_quantity} items in store")
         elif choice == "3":
+            show_products(store_obj)
             set_order(store_obj)
         elif choice == "4":
             print("\nThank you for visiting Best Buy! Goodbye! 👋")
@@ -48,7 +68,16 @@ def start(store_obj: Store) -> None:
         input("Press Enter to continue ")
 
 
-def set_order(store_obj) -> None:
+
+def show_products(store_obj):
+    print("\nProducts in Store:")
+    print("\n--------------")
+    for index, product in enumerate(store_obj.get_all_products(), start=1):
+        print(f"{index}. {product.show()}")
+
+
+
+def set_order(store_obj) -> bool:
     """
     Prompts the user to select products and quantities to create an order.
     Valid products are added to the shopping list, and the total price is displayed.
@@ -67,17 +96,19 @@ def set_order(store_obj) -> None:
     shopping_list = []
     print("\nEnter your order (leave product name empty to finish):")
     while True:
-        product_name = input("Product Name: ")
-        if not product_name:
-            break
-        quantity = int(input("Quantity: "))
+        product_id = int(input("Please Insert Number of  Product : "))
+        all_product = store_obj.get_all_products()
 
-        for product in store_obj.get_all_products():
-            if product.name == product_name:
-                shopping_list.append((product, quantity))
-                break
-        else:
-            print(f"Product '{product_name}' not found in the store.")
+        try:
+            product =  all_product[product_id -1]
+            quantity = int(input("Quantity: "))
+            shopping_list.append((product, quantity))
+        except IndexError:
+            print(f"Product '{product_id}' not found in the store.")
+
+        break
+
+
     try:
         total_price = store_obj.order(shopping_list)
         print(f"\nOrder successful! Total price: ${total_price:.2f}")

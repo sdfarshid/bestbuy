@@ -1,7 +1,11 @@
+import promotions
+
+
 class Product:
     """
     Represents a product in the store.
     """
+
     def __init__(self, name: str, price: float, quantity: int):
         """
         Constructor to initialize the product.
@@ -20,12 +24,24 @@ class Product:
         self.price = price
         self.quantity = quantity
         self.active = True
+        self.promotions = []
+
+
+    def set_promotion(self, promotion: promotions.Promotion) -> None:
+        """Add a promotion to the product."""
+        if promotion not in self.promotions:
+            self.promotions.append(promotion)
+
+    def remove_promotion(self, promotion: promotions.Promotion) -> None:
+        """Remove a promotion from the product."""
+        if promotion in self.promotions:
+            self.promotions.remove(promotion)
 
     def get_quantity(self) -> float:
         """
-        Getter for quantity.
-        :return: Quantity (float)
-        """
+            Getter for quantity.
+            :return: Quantity (float)
+            """
         return self.quantity
 
     def set_quantity(self, quantity: int) -> None:
@@ -75,7 +91,12 @@ class Product:
         Displays the product details.
         :return: A string representation of the product.
         """
-        return f"{self.name}, Price: {self.price}, Quantity: {self.quantity}"
+        """Show product details including promotions."""
+        promo_info = ""
+        if self.promotions:
+            promo_info = " (Promotions: " + ", ".join(promo.name for promo in self.promotions) + ")"
+
+        return f"{self.name}, Price: ${self.price}, Quantity: {self.quantity} {promo_info}"
 
     def buy(self, quantity: int) -> float:
         """
@@ -91,8 +112,66 @@ class Product:
         if quantity > self.quantity:
             raise ValueError("Insufficient quantity available.")
 
+        base_price = self.price * quantity
+
+        total_discount = self.__apply_discounts(base_price, quantity)
+
+        total_price = base_price - total_discount
+
         self.quantity -= quantity
 
         self.check_balance()
 
-        return self.price * quantity
+        return total_price
+
+    def __apply_discounts(self, base_price: float, quantity: int) -> float:
+        """
+            Calculate each Promotion Discount and set to the Base price
+        :param base_price: base_price of the product (float)
+        :param quantity: quantity of the product (int)
+        """
+        total_discount = 0
+        for promotion in self.promotions:
+            promotion_price = promotion.apply_promotion(self, quantity)
+            discounted_price = base_price - promotion_price
+            total_discount += discounted_price
+        return total_discount
+
+
+
+
+class NonStockedProduct(Product):
+    """Represents a product with no physical stock, such as a license."""
+
+    def __init__(self, name, price):
+        """Initialize the NonStockedProduct with a fixed quantity of 0."""
+        super().__init__(name, price, quantity=0)
+
+    def set_quantity(self, quantity):
+        """Override set_quantity to prevent changes to quantity."""
+        raise ValueError("Quantity cannot be changed for NonStockedProduct.")
+
+    def show(self) -> str:
+        """Show product details with special characteristics."""
+        return f"{super().show()} (Non-Stocked Product)"
+
+
+class LimitedProduct(Product):
+    """Represents a product with a purchase limit."""
+
+    def __init__(self, name, price, quantity, maximum):
+        """Initialize the LimitedProduct with a max purchase limit."""
+        super().__init__(name, price, quantity)
+        self.max_per_order = maximum
+
+    def buy(self, quantity) -> float:
+        """Override buy to enforce the maximum purchase limit."""
+        if quantity > self.max_per_order:
+            raise ValueError(
+                f"Cannot purchase more than {self.max_per_order} units of {self.name} in a single order."
+            )
+        return super().buy(quantity)
+
+    def show(self) -> str:
+        """Show product details with special characteristics."""
+        return f"{super().show()} (Limited to {self.max_per_order} per order)"
