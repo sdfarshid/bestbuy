@@ -20,12 +20,40 @@ class Product:
         if quantity < 0:
             raise ValueError("Quantity cannot be negative.")
 
-        self.name = name
-        self.price = price
-        self.quantity = quantity
+        self._name = name
+        self._price = price
+        self._quantity = quantity
         self.active = True
         self.promotions = []
 
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def price(self):
+        return self._price
+
+    @price.setter
+    def price(self, value):
+        if value < 0:
+            raise ValueError("Price cannot be negative.")
+        self._price = value
+
+    @property
+    def quantity(self) -> float:
+        """
+        Getter for quantity.
+        :return: Quantity (float)
+        """
+        return self._quantity
+
+    @quantity.setter
+    def quantity(self, value: int) -> None:
+        if value < 0:
+            raise ValueError("Quantity cannot be negative.")
+        self._quantity = value
+        self.check_balance()
 
     def set_promotion(self, promotion: promotions.Promotion) -> None:
         """Add a promotion to the product."""
@@ -36,13 +64,6 @@ class Product:
         """Remove a promotion from the product."""
         if promotion in self.promotions:
             self.promotions.remove(promotion)
-
-    def get_quantity(self) -> float:
-        """
-            Getter for quantity.
-            :return: Quantity (float)
-            """
-        return self.quantity
 
     def set_quantity(self, quantity: int) -> None:
         """
@@ -136,8 +157,6 @@ class Product:
             discounted_price = base_price - promotion_price
             total_discount += discounted_price
         return total_discount
-
-
 
 
 class NonStockedProduct(Product):

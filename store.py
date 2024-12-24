@@ -34,7 +34,7 @@ class Store:
         Returns the total quantity of all products in the store.
         :return: Total quantity (int).
         """
-        return sum(product.get_quantity() for product in self.products)
+        return sum(product.quantity for product in self.products)
 
     def get_all_products(self) -> List[Product]:
         """
