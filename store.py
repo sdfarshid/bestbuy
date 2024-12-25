@@ -1,4 +1,6 @@
 from typing import List, Tuple
+
+from Exceptions.InsufficientQuantity import InsufficientQuantity
 from products import Product
 
 
@@ -55,3 +57,9 @@ class Store:
                 raise Exception(f"Product '{product.name}' not found in the store.")
             total_price += product.buy(quantity)
         return total_price
+
+    def check_quantity(self, product, quantity):
+        if quantity > product.quantity:
+            raise InsufficientQuantity("Insufficient quantity available.")
+
+

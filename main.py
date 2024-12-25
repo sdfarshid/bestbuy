@@ -1,5 +1,6 @@
 import products
 import promotions
+from Exceptions.InsufficientQuantity import InsufficientQuantity
 from store import Store
 
 
@@ -13,12 +14,12 @@ def init() -> Store:
                         ]
     """
     try:
-        product_list = [ products.Product("MacBook Air M2", price=1450, quantity=100),
-                         products.Product("Bose QuietComfort Earbuds", price=250, quantity=500),
-                         products.Product("Google Pixel 7", price=500, quantity=250),
-                         products.NonStockedProduct("Windows License", price=125),
-                         products.LimitedProduct("Shipping", price=10, quantity=250, maximum=1)
-                         ]
+        product_list = [products.Product("MacBook Air M2", price=1450, quantity=100),
+                        products.Product("Bose QuietComfort Earbuds", price=250, quantity=500),
+                        products.Product("Google Pixel 7", price=500, quantity=250),
+                        products.NonStockedProduct("Windows License", price=125),
+                        products.LimitedProduct("Shipping", price=10, quantity=250, maximum=1)
+                        ]
 
         # Create promotion catalog
         second_half_price = promotions.SecondHalfPrice("Second Half price!")
@@ -38,8 +39,6 @@ def init() -> Store:
     except Exception as error:
         print("\nAn unexpected error occurred:")
         print(f"Error: {error}")
-
-
 
 
 def start(store_obj: Store) -> None:
@@ -68,13 +67,11 @@ def start(store_obj: Store) -> None:
         input("Press Enter to continue ")
 
 
-
 def show_products(store_obj):
     print("\nProducts in Store:")
     print("\n--------------")
     for index, product in enumerate(store_obj.get_all_products(), start=1):
         print(f"{index}. {product.show()}")
-
 
 
 def set_order(store_obj) -> bool:
@@ -96,21 +93,22 @@ def set_order(store_obj) -> bool:
     shopping_list = []
     print("\nEnter your order (leave product name empty to finish):")
     while True:
-        product_id = int(input("Please Insert Number of  Product : "))
-        all_product = store_obj.get_all_products()
-
         try:
-            product =  all_product[product_id -1]
+            product_id = int(input("Please Insert Number of  Product : "))
+            all_product = store_obj.get_all_products()
+            product = all_product[product_id - 1]
             quantity = int(input("Quantity: "))
+            store_obj.check_quantity(product, quantity)
             shopping_list.append((product, quantity))
         except IndexError:
             print(f"Product '{product_id}' not found in the store.")
-
-        break
-
-
+        except ValueError:
+            break
+        except InsufficientQuantity as error:
+            print(error)
     try:
         total_price = store_obj.order(shopping_list)
+
         print(f"\nOrder successful! Total price: ${total_price:.2f}")
     except ValueError as error:
         print("Invalid input:", error)
