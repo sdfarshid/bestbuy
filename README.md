@@ -52,9 +52,9 @@ This Python-based store management system offers functionality to manage product
 
 2. Ensure Python 3.x is installed.
 
-3. Install any dependencies if required:
+3. Install any DEV dependencies if required:
    ```bash
-   pip install -r requirements.txt
+   pip install -r dev-requirements.txt
    ```
 
 ### **Run the Application:**
