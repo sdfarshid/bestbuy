@@ -1,3 +1,5 @@
+from typing import Union
+
 import products
 import promotions
 from Exceptions.InsufficientQuantity import InsufficientQuantity
@@ -74,42 +76,18 @@ def show_products(store_obj):
         print(f"{index}. {product.show()}")
 
 
-def set_order(store_obj) -> bool:
+def set_order(store_obj: Store) -> Union[Exception, None]:
     """
-    Prompts the user to select products and quantities to create an order.
-    Valid products are added to the shopping list, and the total price is displayed.
-
-    Args:
-        store_obj (Store): An instance of the Store class to retrieve products and process the order.
-
-    Raises:
-        ValueError: For invalid input or missing products.
-        Exception: For other errors during the order process.
-
-    Returns:
-        None
+    Prompts the user to set an order and processes it.
+    :param store_obj: The store object containing all products.
+    :return: Exception , None
     """
-
-    shopping_list = []
-    print("\nEnter your order (leave product name empty to finish):")
-    while True:
-        try:
-            product_id = int(input("Please Insert Number of  Product : "))
-            all_product = store_obj.get_all_products()
-            product = all_product[product_id - 1]
-            quantity = int(input("Quantity: "))
-            store_obj.check_quantity(product, quantity)
-            shopping_list.append((product, quantity))
-        except IndexError:
-            print(f"Product '{product_id}' not found in the store.")
-        except ValueError:
-            break
-        except InsufficientQuantity as error:
-            print(error)
     try:
+        shopping_list = store_obj.set_shop_list()
         total_price = store_obj.order(shopping_list)
-
         print(f"\nOrder successful! Total price: ${total_price:.2f}")
+        return None
+
     except ValueError as error:
         print("Invalid input:", error)
     except RuntimeError as error:

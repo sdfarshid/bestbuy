@@ -58,8 +58,34 @@ class Store:
             total_price += product.buy(quantity)
         return total_price
 
-    def check_quantity(self, product, quantity):
-        if quantity > product.quantity:
-            raise InsufficientQuantity("Insufficient quantity available.")
+    def set_shop_list(self):
+        shopping_list = []
+        print("\nEnter your order (leave product name empty to finish):")
+        while True:
+            try:
+                product_id = int(input("Please Insert Number of  Product : "))
+                all_product = self.get_all_products()
+                product = all_product[product_id - 1]
+                quantity = int(input("Quantity: "))
+                self.check_quantity(product, quantity)
+                shopping_list.append((product, quantity))
+            except IndexError:
+                print(f"Product '{product_id}' not found in the store.")
+                break
+            except ValueError:
+                break
+            except InsufficientQuantity as error:
+                print(error)
 
+        if len(shopping_list) <=0:
+            raise ValueError(f"There is no item in shopping list")
 
+        return shopping_list
+
+    def check_quantity(self, product: Product, quantity: int) -> None:
+        try:
+            product._validate_purchase(quantity)
+        except ValueError as error:
+            raise InsufficientQuantity(error)
+        except Exception as ExceptionError:
+            raise ExceptionError

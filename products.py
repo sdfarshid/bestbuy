@@ -126,12 +126,8 @@ class Product:
         :param quantity: Quantity to purchase (int)
         :return: Total price (float)
         """
-        if not self.active:
-            raise Exception("Product is not active.")
-        if quantity <= 0:
-            raise ValueError("Quantity must be greater than 0.")
-        if quantity > self.quantity:
-            raise ValueError("Insufficient quantity available.")
+
+        self._validate_purchase(quantity)
 
         base_price = self.price * quantity
 
@@ -139,11 +135,26 @@ class Product:
 
         total_price = base_price - total_discount
 
-        self.quantity -= quantity
+        self._update_quantity(quantity)
 
         self.check_balance()
 
         return total_price
+
+    def _validate_purchase(self, quantity: int) -> None:
+        """
+        Validates the purchase. Can be overridden by subclasses for custom validation.
+        :param quantity: Quantity to purchase (int)
+        """
+        if not self.active:
+            raise Exception("Product is not active.")
+        if quantity <= 0:
+            raise ValueError("Quantity must be greater than 0.")
+        if quantity > self.quantity:
+            raise ValueError("Insufficient quantity available.")
+
+    def _update_quantity(self, quantity: int) -> None:
+        self.quantity -= quantity
 
     def __apply_discounts(self, base_price: float, quantity: int) -> float:
         """
@@ -170,6 +181,20 @@ class NonStockedProduct(Product):
         """Override set_quantity to prevent changes to quantity."""
         raise ValueError("Quantity cannot be changed for NonStockedProduct.")
 
+    def _validate_purchase(self, quantity: int) -> None:
+        """
+        Validates the purchase. Can be overridden by subclasses for custom validation.
+        :param quantity: Quantity to purchase (int)
+        """
+        if not self.active:
+            raise Exception("Product is not active.")
+        if quantity <= 0:
+            raise ValueError("Quantity must be greater than 0.")
+
+    def _update_quantity(self, quantity):
+        self.quantity = 0
+
+
     def show(self) -> str:
         """Show product details with special characteristics."""
         return f"{super().show()} (Non-Stocked Product)"
@@ -183,13 +208,13 @@ class LimitedProduct(Product):
         super().__init__(name, price, quantity)
         self.max_per_order = maximum
 
-    def buy(self, quantity) -> float:
-        """Override buy to enforce the maximum purchase limit."""
+    def _validate_purchase(self, quantity: int) -> None:
+        """Validate the purchase against maximum allowed per order."""
+        super()._validate_purchase(quantity)
         if quantity > self.max_per_order:
             raise ValueError(
                 f"Cannot purchase more than {self.max_per_order} units of {self.name} in a single order."
             )
-        return super().buy(quantity)
 
     def show(self) -> str:
         """Show product details with special characteristics."""
